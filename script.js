@@ -3,63 +3,6 @@ let buttonClickCount = 0;
 let audioContext;
 let pageLoaded = false;
 
-// Função para carregar contador de visitas do servidor
-async function loadVisitCount() {
-    try {
-        const response = await fetch('https://api.countapi.xyz/get/sistema-curioso/visits');
-        const data = await response.json();
-        visitCount = data.value || 0;
-        document.getElementById('counter').textContent = visitCount;
-    } catch (error) {
-        console.log('Erro ao carregar contador de visitas:', error);
-        visitCount = 0;
-        document.getElementById('counter').textContent = visitCount;
-    }
-}
-
-// Função para incrementar contador de visitas no servidor
-async function incrementVisitCount() {
-    try {
-        const response = await fetch('https://api.countapi.xyz/hit/sistema-curioso/visits');
-        const data = await response.json();
-        visitCount = data.value || visitCount + 1;
-        document.getElementById('counter').textContent = visitCount;
-        return visitCount;
-    } catch (error) {
-        console.log('Erro ao incrementar contador de visitas:', error);
-        visitCount++; // Fallback local
-        document.getElementById('counter').textContent = visitCount;
-        return visitCount;
-    }
-}
-
-// Função para carregar contador do servidor
-async function loadButtonClickCount() {
-    try {
-        // Usar API gratuita de contador - substitua por uma real
-        const response = await fetch('https://api.countapi.xyz/get/sistema-curioso/button-clicks');
-        const data = await response.json();
-        buttonClickCount = data.value || 0;
-    } catch (error) {
-        console.log('Erro ao carregar contador:', error);
-        buttonClickCount = 0;
-    }
-}
-
-// Função para incrementar contador no servidor
-async function incrementButtonClickCount() {
-    try {
-        const response = await fetch('https://api.countapi.xyz/hit/sistema-curioso/button-clicks');
-        const data = await response.json();
-        buttonClickCount = data.value || buttonClickCount + 1;
-        return buttonClickCount;
-    } catch (error) {
-        console.log('Erro ao incrementar contador:', error);
-        buttonClickCount++; // Fallback local
-        return buttonClickCount;
-    }
-}
-
 // Inicializar contexto de áudio
 function initAudio() {
     if (!audioContext) {
@@ -67,12 +10,57 @@ function initAudio() {
     }
 }
 
+// Função para carregar contador de visitas
+function loadVisitCount() {
+    try {
+        const saved = localStorage.getItem('sistema-curioso-visits');
+        visitCount = saved ? parseInt(saved) : 0;
+        console.log('Contador carregado:', visitCount);
+    } catch (error) {
+        visitCount = 0;
+        console.log('Erro ao carregar contador:', error);
+    }
+}
+
+// Função para incrementar contador de visitas
+function incrementVisitCount() {
+    visitCount++;
+    console.log('Incrementando visitas para:', visitCount);
+    document.getElementById('counter').textContent = visitCount;
+    try {
+        localStorage.setItem('sistema-curioso-visits', visitCount.toString());
+        console.log('Contador salvo no localStorage');
+    } catch (error) {
+        console.log('Erro ao salvar contador de visitas:', error);
+    }
+}
+
+// Função para carregar contador de cliques do botão
+function loadButtonClickCount() {
+    try {
+        const saved = localStorage.getItem('sistema-curioso-button-clicks');
+        buttonClickCount = saved ? parseInt(saved) : 0;
+    } catch (error) {
+        buttonClickCount = 0;
+    }
+}
+
+// Função para incrementar contador de cliques do botão
+function incrementButtonClickCount() {
+    buttonClickCount++;
+    try {
+        localStorage.setItem('sistema-curioso-button-clicks', buttonClickCount.toString());
+    } catch (error) {
+        console.log('Erro ao salvar contador de botão');
+    }
+    return buttonClickCount;
+}
+
 // Função para criar som de alerta
 function playAlertSound() {
     try {
         initAudio();
         
-        // Som de alerta - frequências alternadas
         const oscillator1 = audioContext.createOscillator();
         const oscillator2 = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -81,7 +69,6 @@ function playAlertSound() {
         oscillator2.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Configurar frequências de alerta
         oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
         oscillator2.frequency.setValueAtTime(600, audioContext.currentTime);
         
@@ -91,57 +78,83 @@ function playAlertSound() {
         oscillator1.frequency.setValueAtTime(800, audioContext.currentTime + 0.3);
         oscillator2.frequency.setValueAtTime(600, audioContext.currentTime + 0.3);
         
-        // Configurar volume
         gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         
-        // Tocar o som
         oscillator1.start(audioContext.currentTime);
         oscillator2.start(audioContext.currentTime);
         oscillator1.stop(audioContext.currentTime + 0.8);
         oscillator2.stop(audioContext.currentTime + 0.8);
     } catch(e) {
-        console.log('Áudio bloqueado pelo navegador - clique em qualquer lugar para ativar');
+        console.log('Áudio bloqueado pelo navegador');
     }
 }
 
-async function registerVisit() {
-    // Incrementar contador de visitas no servidor
-    await incrementVisitCount();
+function playDestructionSound() {
+    try {
+        initAudio();
+        
+        for(let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                const freq = 200 + Math.random() * 1000;
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(freq * 2, audioContext.currentTime + 0.3);
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            }, i * 100);
+        }
+    } catch(e) {
+        console.log('Som bloqueado');
+    }
+}
+
+function registerVisit() {
+    console.log('Registrando visita...');
     
-    // Tocar som de alerta
+    incrementVisitCount();
     playAlertSound();
     
-    // Efeito glitch
     const container = document.querySelector('.container');
     container.classList.add('glitch');
     setTimeout(() => {
         container.classList.remove('glitch');
     }, 500);
     
-    // Efeito de piscar mais intenso
     const warningSymbol = document.querySelector('.warning-symbol');
     warningSymbol.style.animation = 'blink 0.1s infinite';
     setTimeout(() => {
         warningSymbol.style.animation = 'blink 1s infinite';
     }, 3000);
     
-    // Simular escaneamento
     setTimeout(() => {
-        document.querySelector('.status-bar').innerHTML = 
-            'STATUS: ALERTA | INTRUSO DETECTADO | IP: 192.168.1.' + Math.floor(Math.random() * 255);
+        const statusBar = document.querySelector('.status-bar');
+        if (statusBar) {
+            statusBar.innerHTML = 'STATUS: ALERTA | INTRUSO DETECTADO | IP: 192.168.1.' + Math.floor(Math.random() * 255);
+        }
     }, 1000);
 }
 
-async function incrementCounter() {
-    // Incrementar contador no servidor
-    const finalCount = await incrementButtonClickCount();
+// FUNÇÃO DO BOTÃO - DISPONÍVEL GLOBALMENTE
+function incrementCounter() {
+    console.log('Botão clicado!');
     
-    // Esconder o botão imediatamente
+    const finalCount = incrementButtonClickCount();
+    
     const button = document.getElementById('clickButton');
-    button.classList.add('hidden');
+    if (button) {
+        button.classList.add('hidden');
+    }
     
-    // Iniciar sequência de destruição
     destroyScreen(finalCount);
 }
 
@@ -154,57 +167,53 @@ function destroyScreen(finalCount = buttonClickCount) {
     const title = document.querySelector('.title');
     const statusBar = document.querySelector('.status-bar');
     
-    // Tocar som de alerta intenso
     playDestructionSound();
     
-    // Fase 1: Tremor leve (1 segundo)
+    // Fase 1: Tremor leve
     container.classList.add('shake');
     
     setTimeout(() => {
-        // Fase 2: Tremor maluco (2 segundos)
+        // Fase 2: Tremor maluco
         container.classList.remove('shake');
         container.classList.add('crazy-shake');
         body.style.background = 'linear-gradient(45deg, #ff0000, #000000, #ff0000, #000000)';
         body.style.backgroundSize = '400% 400%';
         body.style.animation = 'background-crazy 0.1s infinite';
         
-        // Status bar fica maluco
-        statusBar.innerHTML = 'ERRO! ERRO! SISTEMA COMPROMETIDO! DESLIGANDO...';
-        statusBar.style.color = '#ff0000';
-        statusBar.style.animation = 'blink 0.1s infinite';
-        
+        if (statusBar) {
+            statusBar.innerHTML = 'ERRO! ERRO! SISTEMA COMPROMETIDO! DESLIGANDO...';
+            statusBar.style.color = '#ff0000';
+            statusBar.style.animation = 'blink 0.1s infinite';
+        }
     }, 1000);
     
     setTimeout(() => {
-        // Fase 3: Elementos começam a desaparecer
-        warningSymbol.classList.add('fade-out');
+        if (warningSymbol) warningSymbol.classList.add('fade-out');
     }, 2000);
     
     setTimeout(() => {
-        title.classList.add('fade-out');
+        if (title) title.classList.add('fade-out');
     }, 2500);
     
     setTimeout(() => {
-        counter.classList.add('fade-out');
+        if (counter) counter.classList.add('fade-out');
     }, 3000);
     
     setTimeout(() => {
-        message.classList.add('fade-out');
+        if (message) message.classList.add('fade-out');
     }, 3500);
     
     setTimeout(() => {
-        statusBar.classList.add('fade-out');
+        if (statusBar) statusBar.classList.add('fade-out');
     }, 4000);
     
     setTimeout(() => {
-        // Fase 4: Tela inteira fecha
         container.classList.remove('crazy-shake');
         container.classList.add('close-screen');
         body.style.animation = 'closeScreen 2s forwards';
     }, 4500);
     
     setTimeout(() => {
-        // Tela preta final com mensagem e contador
         body.innerHTML = `
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Orbitron', monospace; color: #666; text-align: center;">
                 <div style="font-size: 24px; margin-bottom: 30px;">SISTEMA DESLIGADO</div>
@@ -222,70 +231,54 @@ function destroyScreen(finalCount = buttonClickCount) {
     }, 7000);
 }
 
-function playDestructionSound() {
-    try {
-        initAudio();
-        
-        // Som mais intenso e caótico
-        for(let i = 0; i < 5; i++) {
-            setTimeout(() => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Frequências aleatórias e caóticas
-                const freq = 200 + Math.random() * 1000;
-                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(freq * 2, audioContext.currentTime + 0.3);
-                
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-            }, i * 100);
-        }
-    } catch(e) {
-        console.log('Som bloqueado');
-    }
+function initializePage() {
+    if (pageLoaded) return;
+    
+    pageLoaded = true;
+    console.log('Inicializando página...');
+    
+    loadVisitCount();
+    loadButtonClickCount();
+    
+    document.getElementById('counter').textContent = visitCount;
+    
+    setTimeout(() => {
+        registerVisit();
+    }, 500);
 }
 
-// Detectar visita automaticamente quando a página carrega
-window.addEventListener('load', function() {
-    if (!pageLoaded) {
-        pageLoaded = true;
-        // Carregar ambos os contadores do servidor
-        loadVisitCount();
-        loadButtonClickCount();
-        setTimeout(() => {
-            registerVisit();
-        }, 500); // Pequeno delay para efeito dramático
-    }
-});
+// Tornar função disponível globalmente
+window.incrementCounter = incrementCounter;
 
-// Fallback para DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    if (!pageLoaded) {
-        pageLoaded = true;
-        // Carregar ambos os contadores do servidor
-        loadVisitCount();
-        loadButtonClickCount();
-        setTimeout(() => {
-            registerVisit();
-        }, 500);
-    }
-});
+// Event listeners
+window.addEventListener('load', initializePage);
+document.addEventListener('DOMContentLoaded', initializePage);
 
-// Permitir ativação do áudio com qualquer clique
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePage);
+} else {
+    setTimeout(initializePage, 100);
+}
+
+// Ativar áudio com clique
 document.addEventListener('click', function() {
     initAudio();
 }, { once: true });
 
-// Adicionar um aviso sobre áudio se bloqueado
+// Verificações de segurança
 setTimeout(() => {
-    if (!audioContext || audioContext.state === 'suspended') {
-        console.log('💡 Dica: Clique em qualquer lugar para ativar os sons de alerta!');
+    if (!pageLoaded) {
+        console.log('Forçando inicialização...');
+        initializePage();
+    }
+}, 1000);
+
+setInterval(() => {
+    const counterElement = document.getElementById('counter');
+    if (counterElement && counterElement.textContent === '0' && visitCount > 0) {
+        console.log('Corrigindo display do contador');
+        counterElement.textContent = visitCount;
     }
 }, 2000);
+
+console.log('Script carregado! Função incrementCounter:', typeof window.incrementCounter);
