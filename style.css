@@ -69,9 +69,6 @@ body {
 }
 
 .counter-display {
-    font-size: 48px;
-    font-weight: 700;
-    color: #00ff00;
     background: #000;
     padding: 20px;
     border: 2px solid #00ff00;
@@ -79,6 +76,26 @@ body {
     margin: 20px 0;
     text-shadow: 0 0 15px #00ff00;
     font-family: 'Courier New', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.counter-display img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+}
+
+.counter-display a {
+    text-decoration: none;
+    display: block;
+    line-height: 0;
+}
+
+.counter-display div {
+    line-height: 0;
 }
 
 .click-button {
