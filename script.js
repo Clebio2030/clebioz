@@ -3,6 +3,36 @@ let buttonClickCount = 0;
 let audioContext;
 let pageLoaded = false;
 
+// Função para carregar contador de visitas do servidor
+async function loadVisitCount() {
+    try {
+        const response = await fetch('https://api.countapi.xyz/get/sistema-curioso/visits');
+        const data = await response.json();
+        visitCount = data.value || 0;
+        document.getElementById('counter').textContent = visitCount;
+    } catch (error) {
+        console.log('Erro ao carregar contador de visitas:', error);
+        visitCount = 0;
+        document.getElementById('counter').textContent = visitCount;
+    }
+}
+
+// Função para incrementar contador de visitas no servidor
+async function incrementVisitCount() {
+    try {
+        const response = await fetch('https://api.countapi.xyz/hit/sistema-curioso/visits');
+        const data = await response.json();
+        visitCount = data.value || visitCount + 1;
+        document.getElementById('counter').textContent = visitCount;
+        return visitCount;
+    } catch (error) {
+        console.log('Erro ao incrementar contador de visitas:', error);
+        visitCount++; // Fallback local
+        document.getElementById('counter').textContent = visitCount;
+        return visitCount;
+    }
+}
+
 // Função para carregar contador do servidor
 async function loadButtonClickCount() {
     try {
@@ -75,9 +105,9 @@ function playAlertSound() {
     }
 }
 
-function registerVisit() {
-    visitCount++;
-    document.getElementById('counter').textContent = visitCount;
+async function registerVisit() {
+    // Incrementar contador de visitas no servidor
+    await incrementVisitCount();
     
     // Tocar som de alerta
     playAlertSound();
@@ -183,6 +213,9 @@ function destroyScreen(finalCount = buttonClickCount) {
                     Pessoas que clicaram no botão: ${finalCount}
                 </div>
             </div>
+            <footer style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: #666; font-size: 12px; font-family: 'Orbitron', monospace; opacity: 0.7; text-align: center;">
+                <p style="margin: 0; padding: 5px 15px; background: rgba(0, 0, 0, 0.3); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">© 2025 Todos os direitos reservados - @clebioz</p>
+            </footer>
         `;
         body.style.background = '#000';
         body.style.animation = 'none';
@@ -223,7 +256,9 @@ function playDestructionSound() {
 window.addEventListener('load', function() {
     if (!pageLoaded) {
         pageLoaded = true;
-        loadButtonClickCount(); // Carregar contador do servidor
+        // Carregar ambos os contadores do servidor
+        loadVisitCount();
+        loadButtonClickCount();
         setTimeout(() => {
             registerVisit();
         }, 500); // Pequeno delay para efeito dramático
@@ -234,7 +269,9 @@ window.addEventListener('load', function() {
 document.addEventListener('DOMContentLoaded', function() {
     if (!pageLoaded) {
         pageLoaded = true;
-        loadButtonClickCount(); // Carregar contador do servidor
+        // Carregar ambos os contadores do servidor
+        loadVisitCount();
+        loadButtonClickCount();
         setTimeout(() => {
             registerVisit();
         }, 500);
