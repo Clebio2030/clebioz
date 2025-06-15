@@ -1,0 +1,268 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', monospace;
+    background: linear-gradient(45deg, #000, #1a0000, #330000);
+    color: #ff0000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.alert-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 0, 0, 0.1) 10px,
+        rgba(255, 0, 0, 0.1) 20px
+    );
+    pointer-events: none;
+    z-index: -1;
+}
+
+.container {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border: 3px solid #ff0000;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+}
+
+.warning-symbol {
+    font-size: 80px;
+    color: #ff0000;
+    animation: blink 1s infinite;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px #ff0000;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #ff0000;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px #ff0000;
+    letter-spacing: 2px;
+}
+
+.counter-display {
+    font-size: 48px;
+    font-weight: 700;
+    color: #00ff00;
+    background: #000;
+    padding: 20px;
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-shadow: 0 0 15px #00ff00;
+    font-family: 'Courier New', monospace;
+}
+
+.click-button {
+    background: linear-gradient(45deg, #ff0000, #cc0000);
+    color: white;
+    border: none;
+    padding: 20px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 20px 0;
+    font-family: 'Orbitron', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+}
+
+.click-button:hover {
+    background: linear-gradient(45deg, #cc0000, #990000);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+}
+
+.click-button:active {
+    transform: translateY(0);
+}
+
+.shake {
+    animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.crazy-shake {
+    animation: crazyShake 0.1s infinite;
+}
+
+@keyframes crazyShake {
+    0% { transform: translate(10px, 5px) rotate(5deg) scale(1.05); }
+    25% { transform: translate(-8px, -10px) rotate(-3deg) scale(0.95); }
+    50% { transform: translate(15px, -5px) rotate(7deg) scale(1.1); }
+    75% { transform: translate(-10px, 8px) rotate(-5deg) scale(0.9); }
+    100% { transform: translate(5px, -8px) rotate(3deg) scale(1.05); }
+}
+
+.fade-out {
+    animation: fadeOut 2s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(0); }
+}
+
+.close-screen {
+    animation: closeScreen 3s forwards;
+}
+
+@keyframes closeScreen {
+    0% { 
+        opacity: 1; 
+        transform: scale(1); 
+        filter: brightness(1); 
+    }
+    30% { 
+        opacity: 0.8; 
+        transform: scale(1.05); 
+        filter: brightness(1.5) hue-rotate(90deg); 
+    }
+    60% { 
+        opacity: 0.4; 
+        transform: scale(0.8); 
+        filter: brightness(0.3) hue-rotate(180deg); 
+    }
+    90% { 
+        opacity: 0.1; 
+        transform: scale(0.1); 
+        filter: brightness(0) contrast(0); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(0); 
+        filter: brightness(0) contrast(0); 
+        display: none;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.message {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #ffff00;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 0, 0.1);
+    border: 1px solid #ffff00;
+    border-radius: 5px;
+    text-shadow: 0 0 5px #ffff00;
+}
+
+.detected-text {
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ff0000;
+    animation: blink 0.5s infinite;
+}
+
+.status-bar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #00ff00;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.glitch {
+    animation: glitch 0.5s;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.scanline {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 255, 0, 0.8);
+    animation: scan 3s linear infinite;
+    top: 0;
+}
+
+@keyframes scan {
+    0% { top: 0%; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+@keyframes background-crazy {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.copyright {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #666;
+    font-size: 12px;
+    font-family: 'Orbitron', monospace;
+    opacity: 0.7;
+    z-index: 1000;
+    text-align: center;
+}
+
+.copyright p {
+    margin: 0;
+    padding: 5px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}

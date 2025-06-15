@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ SISTEMA DE CURIOSO ⚠️</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="alert-bg"></div>
+    <div class="scanline"></div>
+    
+    <div class="container">
+        <div class="status-bar">STATUS: ATIVO | SISTEMA: ONLINE</div>
+        
+        <div class="warning-symbol">⚠️</div>
+        
+        <h1 class="title">SISTEMA DE CURIOSO</h1>
+        
+        <div>
+            <strong>VISITAS DETECTADAS:</strong>
+        </div>
+        
+        <div class="counter-display" id="counter">0</div>
+        
+        <div class="message" id="message">
+            <strong>🚨 ALERTA! ALERTA! 🚨</strong><br><br>
+            <span class="detected-text">VISITA DETECTADA E REGISTRADA!</span><br><br>
+            Eu vi que você acessou esta página, e agora está registrado no nosso sistema de curiosos, mas fique tranquilo é apenas uma brincadeira! 😄<br><br>
+            <span style="color: #00ff00;">isso é só diversão e uma conscientização para tomar cuidado com qualquer link que você clica, pode ser muito perigoso! ⚠️</span>
+        </div>
+        
+        <button class="click-button" id="clickButton" onclick="incrementCounter()">
+            🚨 NÃO CLIQUE AQUI! 🚨
+        </button>
+    </div>
+
+    <footer class="copyright">
+        <p>© 2025 Todos os direitos reservados - @clebioz</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
