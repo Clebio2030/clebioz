@@ -174,9 +174,9 @@ function destroyScreen() {
                     <div style="background: #000; padding: 0;">
                         <div align=center style="transform: scale(0.8); transform-origin: left center;">
                             <a href='https://contador.s12.com.br'>
-                                <img src='https://contador.s12.com.br/img-waCwZC9c8W51yDyW-20.gif' border='0' alt='contador de visitas gratis' style="filter: opacity(20%);">
+                                <img src='https://contador.s12.com.br/img-9bxzbCdd3w0wax43-22.gif' border='0' alt='contador de visitas' style="filter: opacity(20%);">
                             </a>
-                            <script type='text/javascript' src='https://contador.s12.com.br/ad.js?id=waCwZC9c8W51yDyW'></script>
+                            <script type='text/javascript' src='https://contador.s12.com.br/ad.js?id=9bxzbCdd3w0wax43'></script>
                         </div>
                     </div>
                 </div>
