@@ -10,50 +10,99 @@ function initAudio() {
     }
 }
 
-// Função para carregar contador de visitas
-function loadVisitCount() {
-    try {
-        const saved = localStorage.getItem('sistema-curioso-visits');
-        visitCount = saved ? parseInt(saved) : 0;
-        console.log('Contador carregado:', visitCount);
-    } catch (error) {
-        visitCount = 0;
-        console.log('Erro ao carregar contador:', error);
+// Função para extrair número do contador S12 (GLOBAL - VISITAS)
+function extractS12Count() {
+    const counterImg = document.getElementById('s12-counter');
+    if (counterImg && counterImg.src) {
+        // Extrair número da URL da imagem
+        const match = counterImg.src.match(/img-[^-]+-(\d+)\.gif/);
+        if (match && match[1]) {
+            const count = parseInt(match[1]);
+            console.log('Contador S12 detectado:', count);
+            return count;
+        }
     }
+    return 0;
 }
 
-// Função para incrementar contador de visitas
-function incrementVisitCount() {
-    visitCount++;
-    console.log('Incrementando visitas para:', visitCount);
-    document.getElementById('counter').textContent = visitCount;
-    try {
-        localStorage.setItem('sistema-curioso-visits', visitCount.toString());
-        console.log('Contador salvo no localStorage');
-    } catch (error) {
-        console.log('Erro ao salvar contador de visitas:', error);
+// Função para monitorar e atualizar contador global de visitas
+function updateGlobalCounter() {
+    const s12Count = extractS12Count();
+    if (s12Count > 0) {
+        visitCount = s12Count;
+        document.getElementById('counter').textContent = visitCount;
+        console.log('Contador global atualizado para:', visitCount);
+        return true;
     }
+    return false;
 }
 
-// Função para carregar contador de cliques do botão
-function loadButtonClickCount() {
+// Função para carregar contador GLOBAL de cliques do botão
+async function loadGlobalButtonCount() {
     try {
-        const saved = localStorage.getItem('sistema-curioso-button-clicks');
-        buttonClickCount = saved ? parseInt(saved) : 0;
+        const response = await fetch('https://api.countapi.xyz/get/sistema-curioso-clebioz/button-clicks');
+        const data = await response.json();
+        buttonClickCount = data.value || 0;
+        console.log('Contador global de botão carregado:', buttonClickCount);
+        return buttonClickCount;
     } catch (error) {
+        console.log('Erro ao carregar contador global de botão:', error);
         buttonClickCount = 0;
+        return 0;
     }
 }
 
-// Função para incrementar contador de cliques do botão
-function incrementButtonClickCount() {
-    buttonClickCount++;
+// Função para incrementar contador GLOBAL de cliques do botão
+async function incrementGlobalButtonCount() {
     try {
-        localStorage.setItem('sistema-curioso-button-clicks', buttonClickCount.toString());
+        const response = await fetch('https://api.countapi.xyz/hit/sistema-curioso-clebioz/button-clicks');
+        const data = await response.json();
+        buttonClickCount = data.value || buttonClickCount + 1;
+        console.log('Contador global de botão incrementado para:', buttonClickCount);
+        return buttonClickCount;
     } catch (error) {
-        console.log('Erro ao salvar contador de botão');
+        console.log('Erro ao incrementar contador global de botão:', error);
+        buttonClickCount++;
+        return buttonClickCount;
     }
-    return buttonClickCount;
+}
+
+// Função para monitorar mudanças no contador S12
+function monitorS12Counter() {
+    console.log('Iniciando monitoramento do contador S12...');
+    
+    // Verificar contador a cada 2 segundos
+    const checkInterval = setInterval(() => {
+        if (updateGlobalCounter()) {
+            // Se conseguiu extrair o número, pode reduzir a frequência
+            clearInterval(checkInterval);
+            
+            // Verificar mudanças menos frequentemente após detectar
+            setInterval(updateGlobalCounter, 10000); // A cada 10 segundos
+        }
+    }, 2000);
+    
+    // Observar mudanças na imagem
+    const counterImg = document.getElementById('s12-counter');
+    if (counterImg) {
+        const observer = new MutationObserver(() => {
+            updateGlobalCounter();
+        });
+        
+        observer.observe(counterImg, { 
+            attributes: true, 
+            attributeFilter: ['src'] 
+        });
+    }
+    
+    // Fallback: incrementar contador local se S12 não funcionar após 30 segundos
+    setTimeout(() => {
+        if (visitCount === 0) {
+            console.log('Fallback: usando contador local');
+            visitCount = 1;
+            document.getElementById('counter').textContent = visitCount;
+        }
+    }, 30000);
 }
 
 // Função para criar som de alerta
@@ -271,14 +320,15 @@ setTimeout(() => {
         console.log('Forçando inicialização...');
         initializePage();
     }
-}, 1000);
+}, 3000); // Aumentar tempo para dar chance ao S12
 
+// Verificar se o contador S12 está carregando
 setInterval(() => {
-    const counterElement = document.getElementById('counter');
-    if (counterElement && counterElement.textContent === '0' && visitCount > 0) {
-        console.log('Corrigindo display do contador');
-        counterElement.textContent = visitCount;
+    if (pageLoaded && visitCount === 0) {
+        console.log('Tentando atualizar contador S12...');
+        updateGlobalCounter();
     }
-}, 2000);
+}, 5000);
 
 console.log('Script carregado! Função incrementCounter:', typeof window.incrementCounter);
+console.log('Contador S12 será monitorado automaticamente.');
